@@ -4,7 +4,10 @@ import hust.cs.javacourse.search.index.AbstractDocument;
 import hust.cs.javacourse.search.index.AbstractDocumentBuilder;
 import hust.cs.javacourse.search.index.AbstractTermTuple;
 import hust.cs.javacourse.search.parse.AbstractTermTupleStream;
+import hust.cs.javacourse.search.parse.impl.LengthTermTupleFilter;
+import hust.cs.javacourse.search.parse.impl.PatternTermTupleFilter;
 import hust.cs.javacourse.search.parse.impl.SimpleScanner;
+import hust.cs.javacourse.search.parse.impl.StopWordTermTupleFilter;
 
 import java.io.*;
 
