@@ -36,10 +36,8 @@ public class TermTuple extends AbstractTermTuple {
      */
     @Override
     public boolean equals(Object obj) {
-        if(obj instanceof TermTuple){
-            return this.curPos == ((TermTuple)obj).curPos &&
-                    this.freq == ((TermTuple)obj).freq &&
-                    this.term == ((TermTuple)obj).term;
+        if (obj instanceof  TermTuple){
+            return ((TermTuple) obj).curPos == this.curPos && ((TermTuple) obj).term.getContent().equals(this.term.getContent());
         }
         return false;
     }

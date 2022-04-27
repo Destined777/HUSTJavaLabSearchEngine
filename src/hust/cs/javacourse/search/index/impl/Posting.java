@@ -15,6 +15,11 @@ public class Posting extends AbstractPosting {
         this.freq = frq;
         this.positions = pos;
     }
+
+    public Posting() {
+
+    }
+
     /**
      * 判断二个Posting内容是否相同
      * @param obj ：要比较的另外一个Posting
@@ -22,10 +27,12 @@ public class Posting extends AbstractPosting {
      */
     @Override
     public boolean equals(Object obj) {
-        if (! (obj instanceof AbstractPosting)) {
-            return false;
+        if(obj instanceof Posting){
+            return this.docId == ((Posting)obj).docId &&
+                    this.freq == ((Posting)obj).freq &&
+                    this.positions.containsAll(((Posting)obj).positions) && ((Posting)obj).positions.containsAll(this.positions);
         }
-        return this.docId == ((AbstractPosting) obj).getDocId();
+        return false;
     }
     /**
      * 返回Posting的字符串表示

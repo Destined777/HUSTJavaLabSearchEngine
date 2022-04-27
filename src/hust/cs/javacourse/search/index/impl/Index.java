@@ -9,6 +9,8 @@ import java.util.*;
  * AbstractIndex的具体实现类
  */
 public class Index extends AbstractIndex {
+    public Index() {
+    }
     /**
      * 返回索引的字符串表示
      *
@@ -16,30 +18,11 @@ public class Index extends AbstractIndex {
      */
     @Override
     public String toString() {
-        StringBuilder s = new StringBuilder();
-        s.append("docIdToDocPathMapping映射为：\n");
-        if (docIdToDocPathMapping == null) {
-            s.append("空");
-        } else {
-            for (Map.Entry<Integer, String> entry : docIdToDocPathMapping.entrySet()) {
-                s.append(entry.getKey());
-                s.append(" ");
-                s.append(entry.getValue());
-                s.append("\n");
-            }
-        }
-        s.append("termToPostingListMapping倒排索引为：\n");
-        if (termToPostingListMapping == null) {
-            s.append("空");
-        } else {
-            for (Map.Entry<AbstractTerm, AbstractPostingList> entry : termToPostingListMapping.entrySet()) {
-                s.append(entry.getKey().toString());
-                s.append(" ");
-                s.append(entry.getValue().toString());
-                s.append("\n");
-            }
-        }
-        return s.toString();
+        return "Index{\n" +
+                "docIdToDocPath={\n" + this.docIdToDocPathMapping.toString() +
+                "}, \n" +
+                "termToPostingList={\n" + this.termToPostingListMapping.toString() +
+                "}";
     }
 
     /**
@@ -49,39 +32,39 @@ public class Index extends AbstractIndex {
      */
     @Override
     public void addDocument(AbstractDocument document) {
-        if (docIdToDocPathMapping == null) {
-            docIdToDocPathMapping = new TreeMap<>();
-        }
         docIdToDocPathMapping.put(document.getDocId(), document.getDocPath());
-        if (termToPostingListMapping == null) {
-            termToPostingListMapping = new TreeMap<AbstractTerm, AbstractPostingList>();
-        }
         for (AbstractTermTuple termTuple : document.getTuples()) {
-            AbstractPostingList list = termToPostingListMapping.get(termTuple.term);
-            if (list == null) {
-                list = new PostingList(){};
-            }
-            boolean flag = false;
-            for (int i = 0; i < list.size(); i++) {
-                if (list.get(i).getDocId() == document.getDocId()) {
-                    flag = true;
-                    AbstractPosting now = list.get(i);
-                    if (now.getPositions().contains(termTuple.curPos)) {
-                        break;
-                    } else {
-                        now.getPositions().add(termTuple.curPos);
-                        now.setFreq(now.getFreq()+1);
-                        break;
-                    }
+            if (!termToPostingListMapping.containsKey(termTuple.term)) {
+                // 如果不含有键
+                Posting posting = new Posting();
+                posting.setDocId(document.getDocId());
+                posting.setFreq(termTuple.freq);
+                List<Integer> positions = new ArrayList<>();
+                positions.add(termTuple.curPos);
+                posting.setPositions(positions);
+                termToPostingListMapping.put(termTuple.term, new PostingList());
+                termToPostingListMapping.get(termTuple.term).add(posting);
+            } else {
+                // 如果含有键,先获得已经存储的index,再将目前的curPos加入
+                int index = termToPostingListMapping.get(termTuple.term).indexOf(document.getDocId());
+                if (index == -1) {
+                    // 如果有键，但是没有相应的posting
+                    Posting posting = new Posting();
+                    posting.setDocId(document.getDocId());
+                    posting.setFreq(termTuple.freq);
+                    List<Integer> positions = new ArrayList<>();
+                    positions.add(termTuple.curPos);
+                    posting.setPositions(positions);
+                    termToPostingListMapping.get(termTuple.term).add(posting);
+                } else {
+                    termToPostingListMapping.get(termTuple.term).get(index).getPositions().add(termTuple.curPos);
+                    termToPostingListMapping.get(termTuple.term).get(index).setFreq(
+                            termToPostingListMapping.get(termTuple.term).get(index).getFreq() + 1
+                    );
                 }
             }
-            if (!flag) {
-                List<Integer> temp = new ArrayList();
-                temp.add(termTuple.curPos);
-                Posting posting = new Posting(document.getDocId(), termTuple.freq, temp);
-                list.add(posting);
-            }
         }
+        optimize();
     }
 
     /**

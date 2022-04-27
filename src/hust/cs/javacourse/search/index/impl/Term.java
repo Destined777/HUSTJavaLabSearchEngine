@@ -1,6 +1,3 @@
-/**
- * 对hust.cs.javacourse.search.index包里定义的抽象类和接口的具体实现放在这个包里。impl(implementation)
- */
 package hust.cs.javacourse.search.index.impl;
 
 import hust.cs.javacourse.search.index.AbstractTerm;
@@ -19,11 +16,13 @@ public class Term extends AbstractTerm {
 
     /**
      * 构造函数
-     * @param content: Term内容
+     *
+     * @param content ：Term内容
      */
     public Term(String content) {
-        this.content = content;
+        super(content);
     }
+
     /**
      * 判断二个Term内容是否相同
      * @param obj ：要比较的另外一个Term
@@ -32,11 +31,11 @@ public class Term extends AbstractTerm {
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof Term) {
-            return Objects.equals(this.content, ((Term) obj).content);
-        } else {
-            return false;
+            return ((Term) obj).content.equals(this.content);
         }
+        return false;
     }
+
     /**
      * 返回Term的字符串表示
      * @return 字符串
@@ -45,6 +44,7 @@ public class Term extends AbstractTerm {
     public String toString() {
         return this.content;
     }
+
     /**
      * 返回Term内容
      * @return Term内容
@@ -53,6 +53,7 @@ public class Term extends AbstractTerm {
     public String getContent() {
         return this.content;
     }
+
     /**
      * 设置Term内容
      * @param content：Term的内容
@@ -61,6 +62,7 @@ public class Term extends AbstractTerm {
     public void setContent(String content) {
         this.content = content;
     }
+
     /**
      * 比较二个Term大小（按字典序）
      * @param o： 要比较的Term对象
@@ -70,6 +72,7 @@ public class Term extends AbstractTerm {
     public int compareTo(AbstractTerm o) {
         return this.content.compareTo(o.getContent());
     }
+
     /**
      * 写到二进制文件
      * @param out :输出流对象
@@ -78,21 +81,26 @@ public class Term extends AbstractTerm {
     public void writeObject(ObjectOutputStream out) {
         try {
             out.writeObject(this.content);
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException err) {
+            err.printStackTrace();
         }
     }
+
     /**
      * 从二进制文件读
-     *
      * @param in ：输入流对象
      */
+
     @Override
     public void readObject(ObjectInputStream in) {
         try {
-            this.content = (String) (in.readObject());
-        } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
+            try {
+                this.content = (String)in.readObject();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        } catch (IOException err) {
+            err.printStackTrace();
         }
     }
 }

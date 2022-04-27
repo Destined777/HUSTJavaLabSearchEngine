@@ -6,12 +6,22 @@ import hust.cs.javacourse.search.index.AbstractTermTuple;
 import hust.cs.javacourse.search.parse.AbstractTermTupleStream;
 import hust.cs.javacourse.search.parse.impl.LengthTermTupleFilter;
 import hust.cs.javacourse.search.parse.impl.PatternTermTupleFilter;
-import hust.cs.javacourse.search.parse.impl.SimpleScanner;
 import hust.cs.javacourse.search.parse.impl.StopWordTermTupleFilter;
+import hust.cs.javacourse.search.parse.impl.TermTupleScanner;
 
 import java.io.*;
 
+/**
+ * <pre>
+ * DocumentBuilder是Document构造器的类，是AbstractDocumentBuilder的实现类.
+ *      Document构造器的功能应该是由解析文本文档得到的TermTupleStream，产生Document对象.
+ * </pre>
+ */
 public class DocumentBuilder extends AbstractDocumentBuilder {
+
+    public DocumentBuilder() {
+    }
+
     /**
      * <pre>
      * 由解析文本文档得到的TermTupleStream,构造Document对象.
@@ -23,16 +33,16 @@ public class DocumentBuilder extends AbstractDocumentBuilder {
      */
     @Override
     public AbstractDocument build(int docId, String docPath, AbstractTermTupleStream termTupleStream) {
-        AbstractDocument d = new Document() {};
-        d.setDocId(docId);
-        d.setDocPath(docPath);
-        AbstractTermTuple s;
-        while ((s = termTupleStream.next()) != null) {
-            d.addTuple(s);
+        AbstractDocument doc = new Document(docId, docPath);
+        AbstractTermTuple tup = termTupleStream.next();
+        while (tup != null) {
+            doc.addTuple(tup);
+            tup = termTupleStream.next();
         }
         termTupleStream.close();
-        return d;
+        return doc;
     }
+
     /**
      * <pre>
      * 由给定的File,构造Document对象.
@@ -46,14 +56,13 @@ public class DocumentBuilder extends AbstractDocumentBuilder {
      */
     @Override
     public AbstractDocument build(int docId, String docPath, File file) {
-        AbstractTermTupleStream termTupleStream = null;
-        try{
-            termTupleStream =
-                    new LengthTermTupleFilter(new PatternTermTupleFilter(new StopWordTermTupleFilter(
-                            new SimpleScanner(new BufferedReader(new InputStreamReader(new FileInputStream(file)))))));
-        } catch (FileNotFoundException ex){
-            ex.printStackTrace();
+        AbstractTermTupleStream stream = null;
+        try {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
+            stream = new StopWordTermTupleFilter(new LengthTermTupleFilter(new PatternTermTupleFilter(new TermTupleScanner(reader))));
+        } catch (FileNotFoundException err) {
+            err.printStackTrace();
         }
-        return this.build(docId,docPath,termTupleStream);
+        return this.build(docId, docPath, stream);
     }
 }
