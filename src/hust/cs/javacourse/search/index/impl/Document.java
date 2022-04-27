@@ -115,7 +115,7 @@ public class Document extends AbstractDocument {
      * 获得指定下标位置的三元组
      *
      * @param index：指定下标位置
-     * @return：三元组
+     * @return：AbstractTermTuple三元组
      */
     @Override
     public AbstractTermTuple getTuple(int index) {

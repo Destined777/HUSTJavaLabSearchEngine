@@ -17,7 +17,7 @@ public class LengthTermTupleFilter extends AbstractTermTupleFilter {
     /**
      * 获得下一个三元组
      * 过滤长度小于3或大于20的单词
-     * @return: 下一个三元组；如果到了流的末尾，返回null
+     * return: 下一个三元组；如果到了流的末尾，返回null
      */
     @Override
     public AbstractTermTuple next() {

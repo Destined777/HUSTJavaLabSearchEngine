@@ -67,7 +67,7 @@ public class TermTupleScanner extends AbstractTermTupleScanner {
     }
     /**
      * 获得下一个三元组
-     * @return: 下一个三元组；如果到了流的末尾，返回null
+     * return: 下一个三元组；如果到了流的末尾，返回null
      */
     @Override
     public AbstractTermTuple next() {
