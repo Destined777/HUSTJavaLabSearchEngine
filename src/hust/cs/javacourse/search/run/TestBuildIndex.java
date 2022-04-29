@@ -38,6 +38,12 @@ public class TestBuildIndex {
                 System.out.println(Config.DOC_DIR);
                 System.out.println("倒排索引内容：");
                 System.out.println(index);
+                String indexFile = Config.INDEX_DIR + "index.dat";
+                try {
+                    index.save(new File(indexFile)); //索引保存到文件
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 break;
             case 2:
                 index = new Index();
